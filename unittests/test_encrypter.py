@@ -4,7 +4,8 @@ import pytest
 
 from crypto.encrypter import Encrypter
 
-directory = 'target'
+DIRECTORY = '../target'
+TEST_FILE_NAME = 'moby.txt'
 
 
 @pytest.fixture
@@ -17,19 +18,24 @@ def test_generate_key(encrypter):
 
 
 def test_encrypt_file(encrypter):
-    assert encrypter.encrypt_file(f'{directory}/moby.txt') > 0
+    assert encrypter.encrypt_file(f'{DIRECTORY}/{TEST_FILE_NAME}') > 0
 
 
 def test_decrypt_file(encrypter):
-    assert encrypter.decrypt_file(f'{directory}/moby.txt') >0
+    assert encrypter.decrypt_file(f'{DIRECTORY}/{TEST_FILE_NAME}') > 0
 
 
-def test_bulk_encrypt_decrypt(encrypter):
-    """ encrypts all files in a target directory and checks the output length then subsequently decrypts the files
-     checking the output length and ensuring the post decryption value is less than the encrypted value. """
-    directory_list = os.listdir('target')
-    assert len(directory_list) > 0
-    assert (
-            sum([encrypter.encrypt_file(f'{directory}/{file_name}') for file_name in directory_list]) >
-            sum([encrypter.decrypt_file(f'{directory}/{file_name}') for file_name in directory_list])
-    )
+def test_encrypt_decrypt_files(encrypter):
+    files_to_process = encrypter.traverse_directory_iteratively(DIRECTORY)
+    assert len(files_to_process) > 0
+
+    total_encrypted = 0
+    total_decrypted = 0
+    for file_name in files_to_process:
+        file_path = os.path.join(DIRECTORY, file_name)
+
+        if os.path.isfile(file_path):
+            total_encrypted += encrypter.encrypt_file(file_name)
+            total_decrypted += encrypter.decrypt_file(file_name)
+
+    assert total_encrypted > 0 and total_decrypted > 0

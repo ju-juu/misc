@@ -68,3 +68,22 @@ class Encrypter:
     def _write_file(file_path: str, data: any):
         with open(file_path, 'wb') as file:
             return file.write(data)
+
+    @staticmethod
+    def traverse_directory_iteratively(starting_path):
+        """ Traverses nested directories iteratively and collects file paths """
+        file_paths = []
+        stack = [starting_path]
+
+        while stack:
+            current_path = stack.pop()
+
+            for item in os.listdir(current_path):
+                item_path = os.path.join(current_path, item)
+
+                if os.path.isdir(item_path):
+                    stack.append(item_path)
+                else:
+                    file_paths.append(item_path)
+
+        return file_paths
