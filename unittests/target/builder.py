@@ -1,4 +1,4 @@
-class Burger:
+class Building:
 
     def __init__(self):
         self.floor = None
@@ -15,25 +15,25 @@ class Burger:
         self.door = door_style
 
 
-class BurgerBuilder:
+class BuildingBuilder:
     def __init__(self):
-        self.burger = Burger()
+        self.building = Building()
 
     def add_floor(self, floor_style):
-        self.burger.set_floor(floor_style)
+        self.building.set_floor(floor_style)
         return self
 
     def add_wall(self, wall_style):
-        self.burger.set_wall(wall_style)
+        self.building.set_wall(wall_style)
         return self
 
     def add_door(self, door_style):
-        self.burger.set_door(door_style)
+        self.building.set_door(door_style)
         return self
 
     def build(self):
-        return self.burger
+        return self.building
 
 
-burger = BurgerBuilder().add_floor('tiles').add_wall('brick').add_door('wooden').build()
-assert burger.door == 'wooden'
+building = BuildingBuilder().add_floor('tiles').add_wall('brick').add_door('wooden').build()
+assert building.door == 'wooden'

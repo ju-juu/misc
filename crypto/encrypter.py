@@ -1,6 +1,15 @@
 import os.path
 
 from cryptography.fernet import Fernet
+from cryptography.fernet import InvalidToken
+
+
+class EncryptionFailure(Exception):
+    pass
+
+
+class DecryptionFailure(Exception):
+    pass
 
 
 class Encrypter:
@@ -23,14 +32,32 @@ class Encrypter:
             return key
 
     def encrypt_file(self, file_path: str) -> int:
+        """
+        Encrypts a given file.
+        :param file_path: Path of the file to encrypt.
+        :return: The length of the encrypted string.
+        """
         file_data = self._read_file(file_path)
         encrypted_data = self.crypto.encrypt(file_data)
+        if not len(file_data) < len(encrypted_data):
+            raise EncryptionFailure("Unable to encrypt file.")
         return self._write_file(file_path, encrypted_data)
 
     def decrypt_file(self, file_path: str) -> int:
-        encrypted_data = self._read_file(file_path)
-        decrypted_data = self.crypto.decrypt(encrypted_data)
-        return self._write_file(file_path, decrypted_data)
+        """
+        Decrypts a given file.
+        :param file_path: Path of the file to encrypt.
+        :return: The length of the encrypted string.
+        """
+        try:
+            encrypted_data = self._read_file(file_path)
+            decrypted_data = self.crypto.decrypt(encrypted_data)
+            if not len(encrypted_data) > len(decrypted_data):
+                raise DecryptionFailure("Unable to decrypt file.")
+            return self._write_file(file_path, decrypted_data)
+        except InvalidToken:
+            print(f"Data is not encrypted.")
+            raise
 
     @staticmethod
     def _read_file(file_path: str):
